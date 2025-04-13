@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Learning Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Vertical Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-left">
+        <div class="container-fluid flex-column align-items-start">
+            <a class="navbar-brand mb-4" href="#" data-page="home">
+                <i class="bi bi-book-fill me-2"></i>Learning Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse w-100" id="navbarNav">
+                <ul class="navbar-nav flex-column w-100">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-page="home">
+                            <i class="bi bi-house-door-fill"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="add-learning">
+                            <i class="bi bi-plus-circle-fill"></i> Add Learning
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="show-learning">
+                            <i class="bi bi-list-ul"></i> Show Learnings
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-question-circle-fill"></i> Masail
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item nav-link" href="#" data-page="add-masail">
+                                    <i class="bi bi-plus-square-fill"></i> Add Masail
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item nav-link" href="#" data-page="show-masail">
+                                    <i class="bi bi-card-list"></i> Show Masail
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Page -->
+        <div class="page active" id="home-page">
+            <div class="container mt-5">
+                <div class="welcome-card card mb-4 glow-card">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 mb-4">Welcome to Learning Tracker</h1>
+                        <p class="lead">Track and organize your book learnings efficiently</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-search me-2"></i>Search Learnings</h5>
+                        <div class="search-container">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search questions or answers...">
+                                <button class="btn btn-primary" type="button" id="searchButton">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                            <div id="suggestions" class="suggestions-dropdown"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Search Results Section (on Home Page) -->
+                <div id="homeResults" class="card">
+                    <div class="card-body">
+                        <div id="homeResultsContent" class="list-group">
+                            <!-- Results will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Learning Page -->
+        <div class="page" id="add-learning-page">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-plus-circle-fill me-2"></i>Add New Learning</h5>
+                        <form id="learningForm">
+                            <div class="mb-3">
+                                <label for="question" class="form-label">Question/Key Point</label>
+                                <input type="text" class="form-control" id="question" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="answer" class="form-label">Answer/Explanation</label>
+                                <textarea class="form-control" id="answer" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Learning
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Show Learnings Page -->
+        <div class="page" id="show-learning-page">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-list-ul me-2"></i>Your Learnings</h5>
+                        <div id="results" class="list-group">
+                            <!-- Results will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Masail Page -->
+        <div class="page" id="masail-page">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><i class="bi bi-question-circle-fill me-2"></i>Masail</h5>
+                        <p class="card-text mb-4">This section is for specific questions and answers related to Islamic rulings.</p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-plus-square-fill fs-1 mb-3 text-primary"></i>
+                                        <h5>Add New Masail</h5>
+                                        <p>Add important Islamic rulings and their explanations</p>
+                                        <button class="btn btn-primary mt-2" data-page="add-masail">
+                                            <i class="bi bi-plus-square"></i> Add Masail
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-card-list fs-1 mb-3 text-primary"></i>
+                                        <h5>View All Masail</h5>
+                                        <p>Browse through all your saved Islamic rulings</p>
+                                        <button class="btn btn-primary mt-2" data-page="show-masail">
+                                            <i class="bi bi-card-list"></i> View Masail
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Masail Page -->
+        <div class="page" id="add-masail-page">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-plus-square-fill me-2"></i>Add New Masail</h5>
+                        <form id="masailForm">
+                            <div class="mb-3">
+                                <label for="masailQuestion" class="form-label">Question/Ruling</label>
+                                <input type="text" class="form-control" id="masailQuestion" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="masailAnswer" class="form-label">Answer/Explanation</label>
+                                <textarea class="form-control" id="masailAnswer" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="masailCategory" class="form-label">Category</label>
+                                <select class="form-control" id="masailCategory" required>
+                                    <option value="">Select a category</option>
+                                    <option value="salah">Salah (Prayer)</option>
+                                    <option value="zakah">Zakah (Charity)</option>
+                                    <option value="sawm">Sawm (Fasting)</option>
+                                    <option value="hajj">Hajj (Pilgrimage)</option>
+                                    <option value="tahara">Tahara (Purity)</option>
+                                    <option value="muamalat">Muamalat (Transactions)</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Masail
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Show Masail Page -->
+        <div class="page" id="show-masail-page">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-card-list me-2"></i>Your Masail</h5>
+                        <div class="mb-3">
+                            <label for="filterCategory" class="form-label">Filter by Category</label>
+                            <select class="form-control" id="filterCategory">
+                                <option value="">All Categories</option>
+                                <option value="salah">Salah (Prayer)</option>
+                                <option value="zakah">Zakah (Charity)</option>
+                                <option value="sawm">Sawm (Fasting)</option>
+                                <option value="hajj">Hajj (Pilgrimage)</option>
+                                <option value="tahara">Tahara (Purity)</option>
+                                <option value="muamalat">Muamalat (Transactions)</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div id="masailResults" class="list-group">
+                            <!-- Masail results will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+                    <div class="mb-3">
+                        <label for="secretWordDelete" class="form-label">Enter Secret Word</label>
+                        <input type="password" class="form-control" id="secretWordDelete" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

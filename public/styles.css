@@ -1,0 +1,685 @@
+:root {
+    --navbar-width: 270px; /* Increased from 250px to accommodate longer text */
+    --primary-color: #2a2d4f;
+    --secondary-color: #6c63e6;
+    --accent-color: #00c4ff;
+    --dark-bg: #151725;
+    --dark-card: rgba(42, 45, 79, 0.95);
+    --dark-surface: rgba(42, 45, 79, 0.8);
+    --text-primary: #ffffff;
+    --text-secondary: #e1e2f6;
+    --glass-blur: blur(12px);
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --border-radius-sm: 8px;
+    --border-radius-md: 16px;
+    --border-radius-lg: 24px;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.15);
+    --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.3);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    --gradient-accent: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+}
+
+body {
+    background: linear-gradient(135deg, var(--dark-bg), #161725);
+    min-height: 100vh;
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237c73e6' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Navbar Styles */
+.navbar {
+    width: var(--navbar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 1.5rem 1.25rem;
+    backdrop-filter: var(--glass-blur);
+    background: linear-gradient(180deg, rgba(26, 27, 38, 0.98), rgba(26, 27, 38, 0.95));
+    border-right: 1px solid rgba(124, 115, 230, 0.2);
+    box-shadow: var(--shadow-lg);
+    z-index: 1030;
+    transition: all var(--transition-normal);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    color: white !important;
+    font-weight: 700;
+    padding: 0.5rem 0;
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-fast);
+    width: auto;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-2px);
+}
+
+.navbar-brand i {
+    color: var(--accent-color);
+    margin-right: 0.5rem;
+    font-size: 1.75rem;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 0.8rem 1rem !important;
+    border-radius: var(--border-radius-sm);
+    margin: 0.4rem 0;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: linear-gradient(90deg, rgba(124, 115, 230, 0.15), rgba(124, 115, 230, 0.05));
+    color: var(--accent-color) !important;
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+/* Dropdown Styles */
+.dropdown-menu {
+    background-color: var(--dark-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-left: 1rem;
+    transform-origin: top;
+    transform: scaleY(0);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    display: block !important;
+}
+
+.dropdown-menu.show {
+    transform: scaleY(1);
+    opacity: 1;
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    padding: 0.8rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: var(--dark-surface);
+    color: white;
+}
+
+.dropdown-item i {
+    margin-right: 10px;
+}
+
+.nav-item.dropdown .dropdown-toggle::after {
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Position the dropdown menu for vertical navbar */
+.navbar .dropdown-menu {
+    position: relative;
+    width: 100%;
+    margin-top: 0;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--navbar-width);
+    padding: 2rem;
+    transition: margin-left 0.3s ease;
+}
+
+/* Enhanced Card Styles */
+.card {
+    border: 1px solid rgba(124, 115, 230, 0.2);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+    margin-bottom: 2rem;
+    background: linear-gradient(165deg, var(--dark-card), rgba(42, 45, 79, 0.85));
+    color: var(--text-primary);
+    overflow: hidden;
+    position: relative;
+}
+
+.card-title {
+    color: var(--text-primary);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.welcome-card {
+    background: linear-gradient(135deg, var(--secondary-color), #5d54cc);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+}
+
+.glow-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.glow-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(67, 97, 238, 0.06) 0%, rgba(67, 97, 238, 0.03) 35%, rgba(67, 97, 238, 0.015) 55%, transparent 75%);
+    filter: blur(35px);
+    animation: pulse 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.15;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.25;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.15;
+    }
+}
+
+.welcome-card h1 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-card p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+/* Form Styles */
+.form-control {
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+    border: 2px solid rgba(124, 115, 230, 0.2);
+    background-color: rgba(26, 27, 38, 0.8);
+    color: var(--text-primary);
+    transition: all var(--transition-normal);
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 196, 255, 0.15);
+    background-color: rgba(26, 27, 38, 0.95);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.form-label {
+    color: var(--text-primary);
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #8b83f0, #6a61d6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 115, 230, 0.4);
+}
+
+.btn-primary:hover::after {
+    left: 100%;
+}
+
+/* Suggestions Dropdown */
+.suggestions-dropdown {
+    position: absolute;
+    background: var(--dark-surface);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    width: 100%;
+    top: 100%;
+    left: 0;
+}
+
+.suggestion-item {
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.3s ease;
+    color: var(--text-primary);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: linear-gradient(90deg, rgba(124, 115, 230, 0.1), rgba(124, 115, 230, 0.02));
+}
+
+.suggestion-highlight {
+    background-color: rgba(67, 97, 238, 0.3);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Learning Items */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #333;
+    padding: 1.5rem;
+    transition: background-color 0.3s ease;
+    background-color: var(--dark-card);
+    color: var(--text-primary);
+}
+
+.list-group-item:hover {
+    background-color: var(--dark-surface);
+}
+
+.question {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+}
+
+.answer {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.timestamp {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.8rem;
+}
+
+/* Search Results */
+.search-header {
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--text-primary);
+    border-left: 4px solid var(--secondary-color);
+}
+
+.search-header h6 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Enhanced Alert Styles */
+.alert {
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.05));
+    border-left: 4px solid var(--success-color);
+    color: #2ecc71;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(231, 76, 60, 0.05));
+    border-left: 4px solid var(--danger-color);
+    color: #e74c3c;
+}
+
+.alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: inherit;
+    opacity: 0.7;
+}
+
+.alert .btn-close {
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.alert .btn-close:hover {
+    opacity: 1;
+}
+
+/* Page Transitions */
+.page {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .navbar-collapse {
+        background-color: var(--primary-color);
+        padding: 1rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem 1rem !important;
+    }
+
+    .welcome-card {
+        padding: 1.5rem;
+    }
+
+    .welcome-card h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    opacity: 0.7;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6a61d6;
+}
+
+/* Home Results */
+#homeResults {
+    display: none;
+    animation: fadeIn 0.5s ease;
+    margin-top: 2rem;
+}
+
+#homeResults .card-body {
+    padding-top: 0;
+}
+
+#homeResults .search-header {
+    margin-top: 1rem;
+}
+
+/* Masail Styles */
+.masail-item {
+    position: relative;
+}
+
+.category-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+    background-color: var(--secondary-color);
+}
+
+#masail-page .card {
+    overflow: hidden;
+}
+
+#masail-page .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+#masail-page .card .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#masail-page .card .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+#masail-page .card-body i.fs-1 {
+    color: var(--secondary-color);
+    transition: transform 0.3s ease;
+}
+
+#masail-page .card:hover .card-body i.fs-1 {
+    transform: scale(1.1);
+}
+
+#add-masail-page .form-control,
+#show-masail-page .form-control {
+    margin-bottom: 1rem;
+}
+
+#show-masail-page .list-group {
+    margin-top: 1.5rem;
+}
+
+/* Make navbar subitems have proper indentation and style */
+.nav-item.ms-4 .nav-link {
+    position: relative;
+    padding-left: 2rem !important;
+    font-size: 0.95rem;
+}
+
+.nav-item.ms-4 .nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%);
+}
+
+.nav-item.ms-4 .nav-link:hover::before,
+.nav-item.ms-4 .nav-link.active::before {
+    background-color: white;
+}
+
+/* Edit and Delete Buttons */
+.btn-group {
+    gap: 0.25rem;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    min-width: 28px;
+}
+
+.btn-group .btn i {
+    font-size: 0.875rem;
+    line-height: 1;
+    margin: 0;
+}
+
+/* Edit Forms */
+.edit-form {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+.edit-form .form-label {
+    color: var(--text-color);
+}
+
+.edit-form .form-control {
+    background-color: var(--dark-bg);
+    border-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.edit-form .form-control:focus {
+    background-color: var(--dark-bg);
+    border-color: var(--primary-color);
+    color: var(--text-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+.edit-form .btn-group {
+    margin-top: 1rem;
+}
+
+/* Remove duplicate alert styles that appear later in the file */
+/* The duplicate .alert, .alert-success, .alert-danger, and .alert .btn-close styles 
+   have been consolidated with the ones above */
+
+/* Modal Styles */
+.modal-content {
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+    border: 1px solid var(--secondary-color);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--secondary-color);
+}
+
+.modal-title {
+    color: var(--text-color);
+}
+
+.modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.modal .btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.modal .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.modal .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}

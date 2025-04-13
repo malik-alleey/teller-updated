@@ -1,0 +1,13 @@
+name: teller
+services:
+  - name: teller
+    instance_type: nano
+    ports:
+      - port: 3000
+        protocol: http
+    env:
+      - key: MONGODB_URI
+        value: {{ .MONGODB_URI }}
+      - key: PORT
+        value: "3000"
+    dockerfile: Dockerfile 
