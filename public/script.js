@@ -249,11 +249,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle suggestion click
     suggestionsDiv.addEventListener('click', (e) => {
-        if (e.target.classList.contains('suggestion-item')) {
-            const question = e.target.dataset.question;
+        if (e.target.closest('.suggestion-item')) {
+            const suggestionItem = e.target.closest('.suggestion-item');
+            const question = suggestionItem.dataset.question;
+            const source = suggestionItem.dataset.source || 'learning';
+            
             searchInput.value = question;
             searchLearnings(question);
             suggestionsDiv.style.display = 'none';
+            
+            // If it's a masail suggestion, switch to the masail tab after search
+            if (source === 'masail') {
+                setTimeout(() => {
+                    const masailTab = document.getElementById('masail-tab');
+                    if (masailTab) {
+                        masailTab.click();
+                    }
+                }, 500);
+            }
         }
     });
 
@@ -287,12 +300,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             div.className = 'suggestion-item';
             div.dataset.question = suggestion.question;
+            div.dataset.source = suggestion.source || 'learning';
             
             // Highlight the matching part of the suggestion
             const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
             const highlightedQuestion = suggestion.question.replace(regex, '<span class="suggestion-highlight">$1</span>');
             
-            div.innerHTML = highlightedQuestion;
+            // Add badge for source
+            const sourceBadge = suggestion.source === 'masail' 
+                ? '<span class="badge bg-info ms-2">Masail</span>' 
+                : '<span class="badge bg-secondary ms-2">Learning</span>';
+                
+            div.innerHTML = highlightedQuestion + sourceBadge;
             suggestionsDiv.appendChild(div);
         });
         
@@ -353,22 +372,73 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show loading indicator in the results div
             homeResultsDiv.innerHTML = '<div class="text-center p-4"><span class="loading"></span><p class="mt-3">Searching...</p></div>';
             
-            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-            const learnings = await response.json();
+            // Fetch both learnings and masail in parallel
+            const [learningsResponse, masailResponse] = await Promise.all([
+                fetch(`/api/search?q=${encodeURIComponent(query)}`),
+                fetch(`/api/masail/search?q=${encodeURIComponent(query)}`)
+            ]);
+            
+            const [learnings, masail] = await Promise.all([
+                learningsResponse.json(),
+                masailResponse.json()
+            ]);
+            
+            // Clear the results container
+            homeResultsDiv.innerHTML = '';
             
             // Add search feedback
             const searchHeader = document.createElement('div');
             searchHeader.className = 'search-header mb-3';
             searchHeader.innerHTML = `<h6>Search results for: "${query}"</h6>`;
+            homeResultsDiv.appendChild(searchHeader);
             
-            displayLearnings(learnings, searchHeader, homeResultsDiv);
+            // Create a tab system for displaying results
+            const tabContainer = document.createElement('div');
+            tabContainer.className = 'mb-3';
+            tabContainer.innerHTML = `
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="learnings-tab" data-bs-toggle="tab" 
+                            data-bs-target="#learnings-results" type="button" role="tab" aria-selected="true">
+                            <i class="bi bi-book-fill me-1"></i>Learnings (${learnings.length})
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="masail-tab" data-bs-toggle="tab" 
+                            data-bs-target="#masail-results" type="button" role="tab" aria-selected="false">
+                            <i class="bi bi-question-circle-fill me-1"></i>Masail (${masail.length})
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3">
+                    <div class="tab-pane fade show active" id="learnings-results" role="tabpanel"></div>
+                    <div class="tab-pane fade" id="masail-results" role="tabpanel"></div>
+                </div>
+            `;
+            homeResultsDiv.appendChild(tabContainer);
+            
+            // Display results in their respective tabs
+            const learningsTab = document.getElementById('learnings-results');
+            const masailTab = document.getElementById('masail-results');
+            
+            if (learnings.length === 0) {
+                learningsTab.innerHTML = '<div class="list-group-item">No learnings found</div>';
+            } else {
+                displayLearnings(learnings, null, learningsTab);
+            }
+            
+            if (masail.length === 0) {
+                masailTab.innerHTML = '<div class="list-group-item">No masail found</div>';
+            } else {
+                displayMasail(masail, masailTab);
+            }
             
             // Scroll to results
             homeResultsCard.scrollIntoView({ behavior: 'smooth' });
             
         } catch (error) {
             console.error('Error:', error);
-            homeResultsDiv.innerHTML = '<div class="alert alert-danger">Error searching learnings</div>';
+            homeResultsDiv.innerHTML = '<div class="alert alert-danger">Error searching content</div>';
         }
     }
 
@@ -428,11 +498,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to display masail
-    function displayMasail(masail) {
-        masailResultsDiv.innerHTML = '';
+    function displayMasail(masail, targetDiv = masailResultsDiv) {
+        targetDiv.innerHTML = '';
         
         if (masail.length === 0) {
-            masailResultsDiv.innerHTML = '<div class="list-group-item">No masail found</div>';
+            targetDiv.innerHTML = '<div class="list-group-item">No masail found</div>';
             return;
         }
 
@@ -474,20 +544,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="timestamp">Added on: ${date}</div>
             `;
             
-            masailResultsDiv.appendChild(div);
+            targetDiv.appendChild(div);
         });
 
         // Add event listeners for edit and delete buttons
-        attachMasailEventListeners();
+        attachMasailEventListeners(targetDiv);
     }
 
     // Function to attach event listeners for masail items
-    function attachMasailEventListeners() {
-        masailResultsDiv.querySelectorAll('.edit-masail').forEach(button => {
+    function attachMasailEventListeners(targetDiv = masailResultsDiv) {
+        targetDiv.querySelectorAll('.edit-masail').forEach(button => {
             button.addEventListener('click', handleEditMasail);
         });
 
-        masailResultsDiv.querySelectorAll('.delete-masail').forEach(button => {
+        targetDiv.querySelectorAll('.delete-masail').forEach(button => {
             button.addEventListener('click', handleDeleteMasail);
         });
     }
