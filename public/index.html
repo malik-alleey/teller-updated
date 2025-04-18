@@ -52,6 +52,11 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="questions">
+                            <i class="bi bi-check2-square"></i> Questions
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -229,6 +234,32 @@
                         </div>
                         <div id="masailResults" class="list-group">
                             <!-- Masail results will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Page -->
+        <div class="page" id="questions-page">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-check2-square me-2"></i>Your Questions</h5>
+                        
+                        <!-- Add Question Form -->
+                        <form id="questionForm" class="mb-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="questionInput" placeholder="Add a new question..." required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-plus-lg"></i> Add
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Questions List -->
+                        <div id="questionsList" class="list-group">
+                            <!-- Questions will be displayed here -->
                         </div>
                     </div>
                 </div>

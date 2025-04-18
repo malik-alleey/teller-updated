@@ -387,6 +387,11 @@ body::before {
     padding: 1rem 1.25rem;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .alert-success {
@@ -440,6 +445,26 @@ body::before {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
     }
 }
 
@@ -644,10 +669,6 @@ body::before {
     margin-top: 1rem;
 }
 
-/* Remove duplicate alert styles that appear later in the file */
-/* The duplicate .alert, .alert-success, .alert-danger, and .alert .btn-close styles 
-   have been consolidated with the ones above */
-
 /* Modal Styles */
 .modal-content {
     background-color: var(--dark-bg);
@@ -805,4 +826,74 @@ body::before {
 #homeResultsContent .loading {
     border-color: rgba(124, 115, 230, 0.3);
     border-top-color: var(--accent-color);
+    margin: 2rem auto;
+}
+
+/* Questions Styles */
+#questions-page .card {
+    border: 1px solid rgba(124, 115, 230, 0.3);
+}
+
+#questionForm {
+    margin-bottom: 1.5rem;
+}
+
+#questionForm .input-group {
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+#questionForm .form-control {
+    border-right: none;
+    padding: 0.75rem 1rem;
+}
+
+#questionForm .btn-primary {
+    border-radius: 0;
+    padding: 0.75rem 1.25rem;
+}
+
+#questionsList .list-group-item {
+    background: rgba(42, 45, 79, 0.5);
+    border: 1px solid rgba(124, 115, 230, 0.2);
+    margin-bottom: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+
+#questionsList .list-group-item:hover {
+    background: rgba(42, 45, 79, 0.7);
+    transform: translateX(5px);
+}
+
+#questionsList .form-check {
+    display: flex;
+    align-items: center;
+}
+
+#questionsList .form-check-label {
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+#questionsList .form-check-input {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+#questionsList .btn-danger {
+    opacity: 0.8;
+    transition: all var(--transition-fast);
+}
+
+#questionsList .btn-danger:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }

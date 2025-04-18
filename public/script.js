@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const navbarBrand = document.querySelector('.navbar-brand');
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
     const confirmDeleteBtn = document.getElementById('confirmDelete');
+    const questionForm = document.getElementById('questionForm');
+    const questionInput = document.getElementById('questionInput');
+    const questionsListDiv = document.getElementById('questionsList');
     let itemToDelete = null;
     let deleteCallback = null;
     let debounceTimer;
@@ -99,6 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadLearnings();
         } else if (targetPage === 'show-masail') {
             loadMasail();
+        } else if (targetPage === 'questions') {
+            loadQuestions();
         }
         
         // If navigating to home, clear search results if the search box is empty
@@ -828,23 +833,273 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to show alerts
     function showAlert(message, type) {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-        alertDiv.style.position = 'fixed';
-        alertDiv.style.top = '20px';
-        alertDiv.style.left = '50%';
-        alertDiv.style.transform = 'translateX(-50%)';
-        alertDiv.style.zIndex = '1050';
-        alertDiv.style.minWidth = '300px';
-        alertDiv.innerHTML = `
+        const alertBox = document.createElement('div');
+        alertBox.className = `alert alert-${type} mt-3 alert-dismissible fade show`;
+        alertBox.innerHTML = `
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
+        document.body.appendChild(alertBox);
         
-        document.body.appendChild(alertDiv);
+        // Position it at the top center
+        alertBox.style.position = 'fixed';
+        alertBox.style.top = '20px';
+        alertBox.style.left = '50%';
+        alertBox.style.transform = 'translateX(-50%)';
+        alertBox.style.zIndex = '9999';
+        alertBox.style.minWidth = '300px';
+        alertBox.style.textAlign = 'center';
+        alertBox.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
         
+        // Add animation for better visibility
+        alertBox.style.animation = 'fadeInDown 0.5s ease';
+        
+        // Remove after 3 seconds with fade-out animation
         setTimeout(() => {
-            alertDiv.remove();
-        }, 5000); // Increased timeout to 5 seconds for better visibility
+            alertBox.style.animation = 'fadeOut 0.5s ease forwards';
+            setTimeout(() => {
+                alertBox.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Questions functionality
+    
+    // Load all questions
+    async function loadQuestions() {
+        try {
+            const response = await fetch('/api/questions');
+            const questions = await response.json();
+            displayQuestions(questions);
+        } catch (error) {
+            console.error('Error loading questions:', error);
+            showAlert('Failed to load questions', 'danger');
+        }
+    }
+    
+    // Display questions in the list
+    function displayQuestions(questions) {
+        questionsListDiv.innerHTML = '';
+        
+        if (questions.length === 0) {
+            questionsListDiv.innerHTML = '<div class="text-center mt-4 text-muted">No questions added yet</div>';
+            return;
+        }
+        
+        // Create a document fragment for better performance
+        const fragment = document.createDocumentFragment();
+        
+        questions.forEach(question => {
+            const questionItem = document.createElement('div');
+            questionItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            questionItem.dataset.id = question._id;
+            questionItem.dataset.questionId = question._id;
+            
+            // Create checkbox for completion status
+            const checkboxContainer = document.createElement('div');
+            checkboxContainer.className = 'form-check';
+            
+            const checkbox = document.createElement('input');
+            checkbox.className = 'form-check-input question-checkbox';
+            checkbox.type = 'checkbox';
+            checkbox.checked = question.completed;
+            checkbox.dataset.id = question._id;
+            
+            // Create question text
+            const questionText = document.createElement('label');
+            questionText.className = 'ms-2 form-check-label';
+            questionText.textContent = question.question;
+            
+            // If completed, add strikethrough style
+            if (question.completed) {
+                questionText.style.textDecoration = 'line-through';
+                questionText.style.color = '#6c757d';
+            }
+            
+            checkboxContainer.appendChild(checkbox);
+            checkboxContainer.appendChild(questionText);
+            
+            // Create delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-sm btn-danger ms-2 delete-question';
+            deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+            deleteBtn.dataset.id = question._id;
+            deleteBtn.setAttribute('aria-label', 'Delete question');
+            
+            // Combine elements
+            const leftSide = document.createElement('div');
+            leftSide.appendChild(checkboxContainer);
+            
+            questionItem.appendChild(leftSide);
+            questionItem.appendChild(deleteBtn);
+            
+            fragment.appendChild(questionItem);
+        });
+        
+        // Add all items at once for better performance
+        questionsListDiv.appendChild(fragment);
+        
+        // Attach event listeners
+        attachQuestionEventListeners();
+    }
+    
+    // Handle question form submission
+    if (questionForm) {
+        questionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const question = questionInput.value.trim();
+            if (!question) return;
+            
+            try {
+                const response = await fetch('/api/questions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question }),
+                });
+                
+                if (response.ok) {
+                    questionInput.value = '';
+                    loadQuestions();
+                } else {
+                    throw new Error('Failed to add question');
+                }
+            } catch (error) {
+                console.error('Error adding question:', error);
+                showAlert('Failed to add question', 'danger');
+            }
+        });
+    }
+    
+    // Initialize event delegation for questions list
+    if (questionsListDiv) {
+        // Add a click handler to the entire questions list container
+        questionsListDiv.addEventListener('click', function(e) {
+            // Handle delete button clicks via delegation
+            if (e.target.classList.contains('delete-question') || 
+                e.target.closest('.delete-question')) {
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Find the button element
+                const button = e.target.classList.contains('delete-question') 
+                    ? e.target 
+                    : e.target.closest('.delete-question');
+                    
+                if (button && button.dataset.id) {
+                    // Show delete confirmation modal
+                    showDeleteConfirmation(button.dataset.id);
+                }
+            }
+        });
+    }
+    
+    // Function to show delete confirmation modal
+    function showDeleteConfirmation(id) {
+        // Store the ID to delete
+        itemToDelete = id;
+        
+        // Set up the delete callback
+        deleteCallback = async () => {
+            try {
+                const secretWord = document.getElementById('secretWordDelete').value;
+                
+                const response = await fetch(`/api/questions/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ secretWord })
+                });
+                
+                if (response.ok) {
+                    // Find and remove the question item
+                    const questionItem = document.querySelector(`.list-group-item[data-id="${id}"]`) || 
+                                        document.querySelector(`.list-group-item[data-question-id="${id}"]`);
+                    
+                    if (questionItem) {
+                        questionItem.remove();
+                        
+                        // Check if there are any questions left
+                        if (questionsListDiv.children.length === 0) {
+                            questionsListDiv.innerHTML = '<div class="text-center mt-4 text-muted">No questions added yet</div>';
+                        }
+                    } else {
+                        // Reload all questions if item not found
+                        loadQuestions();
+                    }
+                    
+                    showAlert('Question deleted successfully', 'success');
+                    return true;
+                } else {
+                    const data = await response.json();
+                    showAlert(data.error || 'Failed to delete question', 'danger');
+                    throw new Error(data.error || 'Failed to delete question');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(error.message || 'Error deleting question', 'danger');
+                throw error; // Re-throw the error to be caught by the confirmation handler
+            }
+        };
+        
+        // Show the delete confirmation modal
+        deleteModal.show();
+    }
+    
+    // Attach event listeners to question items
+    function attachQuestionEventListeners() {
+        // Checkbox toggle event
+        document.querySelectorAll('.question-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', async (e) => {
+                const id = e.target.dataset.id;
+                try {
+                    const response = await fetch(`/api/questions/${id}/toggle`, {
+                        method: 'PUT'
+                    });
+                    
+                    if (response.ok) {
+                        // Update UI
+                        const label = e.target.nextElementSibling;
+                        if (e.target.checked) {
+                            label.style.textDecoration = 'line-through';
+                            label.style.color = '#6c757d';
+                        } else {
+                            label.style.textDecoration = 'none';
+                            label.style.color = '';
+                        }
+                    } else {
+                        throw new Error('Failed to update question');
+                    }
+                } catch (error) {
+                    console.error('Error toggling question:', error);
+                    showAlert('Failed to update question', 'danger');
+                    // Revert checkbox state
+                    e.target.checked = !e.target.checked;
+                }
+            });
+        });
+        
+        // We're using event delegation for delete buttons so this is no longer needed
+        // But keeping it as a fallback
+        document.querySelectorAll('.delete-question').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Get question ID from button's data attribute
+                const id = this.dataset.id;
+                if (!id) {
+                    console.error('Question ID not found');
+                    return;
+                }
+                
+                // Show delete confirmation modal
+                showDeleteConfirmation(id);
+            });
+        });
     }
 });
